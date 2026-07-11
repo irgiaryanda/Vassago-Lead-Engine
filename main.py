@@ -1,12 +1,22 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+from contextlib import asynccontextmanager
+from database.db_setup import init_db
 from api.routes import router
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Setup database
+    await init_db()
+    yield
+
+app = FastAPI(lifespan=lifespan)
 
 app.mount("/ui", StaticFiles(directory="ui"), name="ui")
+
 app.include_router(router)
 
 @app.get("/")
 async def root():
+    # Return status
     return {"status": "Engine is running"}
