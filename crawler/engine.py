@@ -11,14 +11,13 @@ async def run_lead_scan(keyword: str, max_results: int = 3) -> list[dict]:
         try:
             print(f"\n[CRAWLER] Initiating search for: {keyword}")
             encoded_keyword = urllib.parse.quote_plus(keyword)
-            search_url = f"https://duckduckgo.com/?q={encoded_keyword}"
-            await page.goto(search_url, timeout=15000)
-            await page.wait_for_load_state("networkidle")
+            search_url = f"https://html.duckduckgo.com/html/?q={encoded_keyword}"
+            await page.goto(search_url, timeout=30000)
             await page.wait_for_timeout(2000)
             print(f"[CRAWLER] Page loaded. Title: {await page.title()}")
             
             # Extract search result URLs
-            url_elements = await page.locator("a[data-testid='result-title-a'], a").all()
+            url_elements = await page.locator("a.result__url, a.result__snippet, a.result__a, a").all()
             print(f"[CRAWLER] Found {len(url_elements)} raw link elements on search page")
             
             urls_to_visit = []
@@ -67,8 +66,8 @@ async def run_lead_scan(keyword: str, max_results: int = 3) -> list[dict]:
                 except Exception:
                     print(f"[CRAWLER] ❌ Skipped (Error/Timeout): {url}")
                     continue
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"[CRAWLER] ❌ FATAL ERROR during search: {e}")
         finally:
             await browser.close()
             
