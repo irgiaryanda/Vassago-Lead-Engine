@@ -1,5 +1,10 @@
+import sys
+import asyncio
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+
+if sys.platform == "win32":
+    asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
 from contextlib import asynccontextmanager
 from database.db_setup import init_db
 from api.routes import router
