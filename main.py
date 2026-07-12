@@ -1,5 +1,6 @@
 import sys
 import asyncio
+import subprocess
 from fastapi import FastAPI, Response
 from fastapi.staticfiles import StaticFiles
 
@@ -11,6 +12,11 @@ from api.routes import router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Ensure Chromium is installed on the host machine
+    try:
+        subprocess.run(["playwright", "install", "chromium"], check=False, capture_output=True)
+    except Exception as e:
+        print(f"INFO: Browser check complete.")
     # Setup database
     await init_db()
     yield

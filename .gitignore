@@ -2,3 +2,6 @@ __pycache__/
 venv/
 *.sqlite3
 .env
+build/
+dist/
+*.spec
