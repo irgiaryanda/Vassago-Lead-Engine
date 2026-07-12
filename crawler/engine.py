@@ -10,12 +10,15 @@ async def run_lead_scan(keyword: str, max_results: int = 3) -> list[dict]:
         
         try:
             print(f"\n[CRAWLER] Initiating search for: {keyword}")
-            await page.goto(f"https://html.duckduckgo.com/html/?q={keyword}", timeout=10000)
+            encoded_keyword = urllib.parse.quote_plus(keyword)
+            search_url = f"https://duckduckgo.com/?q={encoded_keyword}"
+            await page.goto(search_url, timeout=15000)
+            await page.wait_for_load_state("networkidle")
+            await page.wait_for_timeout(2000)
             print(f"[CRAWLER] Page loaded. Title: {await page.title()}")
             
             # Extract search result URLs
-            await page.wait_for_timeout(2000)
-            url_elements = await page.locator("a.result__url, a.result__snippet, a.result__a, a").all()
+            url_elements = await page.locator("a[data-testid='result-title-a'], a").all()
             print(f"[CRAWLER] Found {len(url_elements)} raw link elements on search page")
             
             urls_to_visit = []
@@ -30,6 +33,9 @@ async def run_lead_scan(keyword: str, max_results: int = 3) -> list[dict]:
                 elif href.startswith("http"):
                     actual_url = href
                 else:
+                    continue
+                    
+                if "duckduckgo.com" in actual_url:
                     continue
                     
                 if actual_url and actual_url.startswith("http") and actual_url not in urls_to_visit:
