@@ -1,4 +1,5 @@
 import re
+import urllib.parse
 from playwright.async_api import async_playwright
 
 async def run_lead_scan(keyword: str, max_results: int = 3) -> list[dict]:
@@ -18,8 +19,13 @@ async def run_lead_scan(keyword: str, max_results: int = 3) -> list[dict]:
                 if len(urls_to_visit) >= max_results:
                     break
                 href = await element.get_attribute("href")
-                if href and href.startswith("http"):
-                    urls_to_visit.append(href)
+                if href:
+                    if href.startswith("//duckduckgo.com/l/?uddg="):
+                        qs = urllib.parse.parse_qs(urllib.parse.urlparse("http:" + href).query)
+                        if "uddg" in qs:
+                            href = urllib.parse.unquote(qs["uddg"][0])
+                    if href.startswith(("http://", "https://")):
+                        urls_to_visit.append(href)
                     
             # Visit each URL
             for url in urls_to_visit:
