@@ -12,20 +12,18 @@ async function fetchLeads() {
         const response = await fetch('/api/leads');
         const data = await response.json();
         
-        if (data.status === 'success' || data.data) {
-            const leads = data.data || data;
-            totalLeads.textContent = leads.length;
-            
-            leadsBody.innerHTML = leads.map(lead => `
-                <tr>
-                    <td>${lead.id}</td>
-                    <td>${lead.company_name || '-'}</td>
-                    <td>${lead.contact_email || '-'}</td>
-                    <td>${lead.website_url ? `<a href="${lead.website_url}" target="_blank">${lead.website_url}</a>` : '-'}</td>
-                    <td>${lead.scraped_at ? new Date(lead.scraped_at).toLocaleString() : '-'}</td>
-                </tr>
-            `).join('');
-        }
+        const leads = Array.isArray(data) ? data : (data.data || []);
+        totalLeads.textContent = leads.length;
+        
+        leadsBody.innerHTML = leads.map(lead => `
+            <tr>
+                <td>${lead.id}</td>
+                <td>${lead.company_name || '-'}</td>
+                <td>${lead.contact_email || '-'}</td>
+                <td><a href="${lead.website_url}" target="_blank" style="color: #60a5fa; text-decoration: underline;">Link</a></td>
+                <td>${new Date(lead.scraped_at).toLocaleString()}</td>
+            </tr>
+        `).join('');
     } catch (error) {
         console.error('Fetch error:', error);
     }
@@ -51,8 +49,7 @@ async function scanLeads() {
         const data = await response.json();
         
         if (data.status === 'success' || response.ok) {
-            const savedCount = data.saved_count !== undefined ? data.saved_count : (data.leads ? data.leads.length : 0);
-            alert(`Scan complete. Saved ${savedCount} leads.`);
+            alert(`Scan complete! Scanned: ${data.scanned_count} websites. Saved: ${data.newly_saved} new leads.`);
             keywordInput.value = '';
             fetchLeads();
         } else {
