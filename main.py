@@ -1,6 +1,6 @@
 import sys
 import asyncio
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from fastapi.staticfiles import StaticFiles
 
 if sys.platform == "win32":
@@ -16,6 +16,10 @@ async def lifespan(app: FastAPI):
     yield
 
 app = FastAPI(lifespan=lifespan)
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    return Response(content=b"", media_type="image/x-icon")
 
 app.mount("/ui", StaticFiles(directory="ui"), name="ui")
 
