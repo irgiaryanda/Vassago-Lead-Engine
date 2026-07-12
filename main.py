@@ -20,13 +20,19 @@ from api.routes import router
 async def lifespan(app: FastAPI):
     # Ensure Chromium is installed on the host machine
     try:
-        print("INFO: Checking and installing Chromium browser (Progress bar will show below if downloading)...")
-        from playwright._impl._driver import compute_driver_executable, get_driver_env
-        driver_executable = compute_driver_executable()
-        env = get_driver_env()
-        # Pass as a clean list WITHOUT shell=True. Python automatically handles .cmd quoting!
-        subprocess.run([str(driver_executable), "install", "chromium"], env=env, check=False)
-        print("INFO: Browser setup complete.")
+        print("INFO: Locating bundled Playwright driver...")
+        # Look for the bundled node executable inside the _internal folder
+        base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+        # This pattern finds the node executable bundled by collect-all
+        node_path = os.path.join(base_path, "playwright", "driver", "node.exe")
+        cli_path = os.path.join(base_path, "playwright", "driver", "package", "cli.js")
+        
+        if os.path.exists(node_path):
+            print(f"INFO: Driver found. Installing browser...")
+            subprocess.run([node_path, cli_path, "install", "chromium"], check=True)
+            print("INFO: Browser setup complete.")
+        else:
+            print(f"WARNING: Could not find driver at {node_path}")
     except Exception as e:
         print(f"WARNING: Browser setup issue: {e}")
     print("INFO: Server is running. Opening dashboard in default browser...")
