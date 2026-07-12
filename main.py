@@ -2,12 +2,6 @@ import os
 import sys
 os.environ["PLAYWRIGHT_BROWSERS_PATH"] = "0"
 
-# Intercept command line arguments to act as Playwright installer (Fixes Fork Bomb)
-if len(sys.argv) > 1 and sys.argv[1] == "install":
-    print("INFO: Initializing browser installation...")
-    from playwright._impl._cli import main as pw_cli
-    sys.exit(pw_cli())
-
 import asyncio
 import subprocess
 import webbrowser
@@ -26,10 +20,14 @@ from api.routes import router
 async def lifespan(app: FastAPI):
     # Ensure Chromium is installed on the host machine
     try:
-        print("INFO: Checking browser dependencies. (Watch the progress bar below if downloading)...")
-        subprocess.run([sys.executable, "install", "chromium"])
+        print("INFO: Checking and installing Chromium browser. Please wait (this may take a moment if downloading)...")
+        from playwright._impl._driver import compute_driver_executable, get_driver_env
+        driver_executable = compute_driver_executable()
+        env = get_driver_env()
+        subprocess.run([str(driver_executable), "install", "chromium"], env=env, check=False)
+        print("INFO: Browser setup complete.")
     except Exception as e:
-        print(f"INFO: Browser check complete.")
+        print(f"WARNING: Browser setup issue: {e}")
     print("INFO: Server is running. Opening dashboard in default browser...")
     webbrowser.open("http://127.0.0.1:8000/ui/index.html")
     # Setup database
