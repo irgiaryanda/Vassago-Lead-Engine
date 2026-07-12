@@ -1,5 +1,6 @@
 import os
 import sys
+os.environ["PLAYWRIGHT_BROWSERS_PATH"] = "0"
 import asyncio
 import subprocess
 import webbrowser
@@ -18,7 +19,8 @@ from api.routes import router
 async def lifespan(app: FastAPI):
     # Ensure Chromium is installed on the host machine
     try:
-        subprocess.run(["playwright", "install", "chromium"], check=False, capture_output=True)
+        print("INFO: Checking and installing Chromium browser in background...")
+        subprocess.run([sys.executable, "-m", "playwright", "install", "chromium"], check=False)
     except Exception as e:
         print(f"INFO: Browser check complete.")
     print("INFO: Server is running. Opening dashboard in default browser...")
