@@ -1,8 +1,7 @@
-```markdown
 # Vassago Lead Engine
 
-> **READY TO USE (NON-DEVELOPERS):** 
-> You don't need to install Python or use the terminal. Download the compiled Windows standalone application directly from our [Latest Release](https://github.com/irgiaryanda/Vassago-Lead-Engine/releases/latest). Extract the ZIP file and run `VassagoLeadEngine.exe`.
+**READY TO USE (NON-DEVELOPERS):**
+You don't need to install Python or use the terminal. Download the compiled Windows standalone application directly from our [Latest Release](https://github.com/irgiaryanda/Vassago-Lead-Engine/releases/latest). Extract the ZIP file and run `VassagoLeadEngine.exe`.
 
 A robust, asynchronous web scraping engine designed for automated B2B lead generation. Built on FastAPI and Playwright, this application features dynamic search engine querying, anti-bot mitigation, and a standalone front-end dashboard for real-time monitoring and data extraction.
 
@@ -34,50 +33,3 @@ Ensure the following dependencies are installed on your local machine before pro
    ```bash
    git clone [https://github.com/irgiaryanda/Vassago-Lead-Engine.git](https://github.com/irgiaryanda/Vassago-Lead-Engine.git)
    cd Vassago-Lead-Engine
-
-```
-
-2. Initialize and activate a virtual environment:
-```bash
-# Windows
-python -m venv venv
-venv\Scripts\activate
-
-# macOS/Linux
-python3 -m venv venv
-source venv/bin/activate
-
-```
-
-
-3. Install system requirements and browser binaries:
-```bash
-pip install -r requirements.txt
-playwright install chromium
-
-```
-
-
-
-## Usage Execution
-
-Start the application server using Uvicorn:
-
-```bash
-uvicorn main:app
-
-```
-
-Once the server is running, navigate to the local dashboard via your web browser:
-`http://localhost:8000/ui/index.html`
-
-Enter your target industry and location into the keyword field (e.g., "Software House in Jakarta") and initialize the scan. The engine will autonomously navigate, extract, and populate the database.
-
-## License
-
-Copyright (c) 2026 Vassago Labs. All Rights Reserved.
-This project is proprietary. Unauthorized copying, modification, or distribution of this software is strictly prohibited.
-
-```
-
-```
