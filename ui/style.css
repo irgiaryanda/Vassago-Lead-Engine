@@ -1,1 +1,163 @@
-/* Style styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #0f172a;
+    color: #e2e8f0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #1e293b;
+}
+
+h1 {
+    color: #38bdf8;
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+.stats-card {
+    background: #1e293b;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    border: 1px solid #334155;
+}
+
+.stats-label {
+    font-size: 0.875rem;
+    color: #94a3b8;
+}
+
+#total-leads {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #4ade80;
+    margin-left: 0.5rem;
+}
+
+.control-panel {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+#keyword-input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    border: 1px solid #334155;
+    background: #1e293b;
+    color: #f8fafc;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+#keyword-input:focus {
+    border-color: #38bdf8;
+}
+
+#scan-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    border: none;
+    background: #38bdf8;
+    color: #0f172a;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+}
+
+#scan-btn:hover {
+    background: #7dd3fc;
+}
+
+#scan-btn:active {
+    transform: scale(0.98);
+}
+
+.hidden {
+    display: none !important;
+}
+
+#status-area {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    background: #1e293b;
+    padding: 1rem;
+    border-radius: 6px;
+    border-left: 4px solid #38bdf8;
+}
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid #334155;
+    border-top-color: #38bdf8;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.data-section {
+    background: #1e293b;
+    border-radius: 8px;
+    border: 1px solid #334155;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #334155;
+}
+
+th {
+    color: #94a3b8;
+    font-weight: 600;
+    font-size: 0.875rem;
+    background: #0f172a;
+}
+
+td {
+    font-size: 0.875rem;
+}
+
+tbody tr:hover {
+    background: #334155;
+}
+
+a {
+    color: #38bdf8;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
