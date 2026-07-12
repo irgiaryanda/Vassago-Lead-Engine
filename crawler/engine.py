@@ -11,13 +11,16 @@ async def run_lead_scan(keyword: str, max_results: int = 3) -> list[dict]:
         try:
             print(f"\n[CRAWLER] Initiating search for: {keyword}")
             encoded_keyword = urllib.parse.quote_plus(keyword)
-            search_url = f"https://www.bing.com/search?q={encoded_keyword}"
+            search_url = f"https://search.yahoo.com/search?p={encoded_keyword}"
             await page.goto(search_url, timeout=30000)
             await page.wait_for_timeout(2000)
             print(f"[CRAWLER] Page loaded. Title: {await page.title()}")
             
+            await page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+            await page.wait_for_timeout(3000)
+            
             # Extract search result URLs
-            url_elements = await page.locator("li.b_algo h2 a, li.b_algo .b_title a").all()
+            url_elements = await page.locator("a").all()
             print(f"[CRAWLER] Found {len(url_elements)} raw link elements on search page")
             
             urls_to_visit = []
@@ -27,6 +30,9 @@ async def run_lead_scan(keyword: str, max_results: int = 3) -> list[dict]:
                     
                 href = await element.get_attribute("href")
                 if not href or not href.startswith("http"):
+                    continue
+                    
+                if any(domain in href for domain in ["yahoo.com", "bing.com", "microsoft.com", "duckduckgo.com"]):
                     continue
                     
                 actual_url = href
