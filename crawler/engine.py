@@ -6,14 +6,17 @@ async def run_lead_scan(keyword: str, max_results: int = 3) -> list[dict]:
     leads = []
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
-        page = await browser.new_page()
+        page = await browser.new_page(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
         
         try:
+            print(f"\n[CRAWLER] Initiating search for: {keyword}")
             await page.goto(f"https://html.duckduckgo.com/html/?q={keyword}", timeout=10000)
+            print(f"[CRAWLER] Page loaded. Title: {await page.title()}")
             
             # Extract search result URLs
             await page.wait_for_timeout(2000)
             url_elements = await page.locator("a.result__url, a.result__snippet, a.result__a, a").all()
+            print(f"[CRAWLER] Found {len(url_elements)} raw link elements on search page")
             
             urls_to_visit = []
             for element in url_elements:
@@ -31,7 +34,7 @@ async def run_lead_scan(keyword: str, max_results: int = 3) -> list[dict]:
                     
                 if actual_url and actual_url.startswith("http") and actual_url not in urls_to_visit:
                     urls_to_visit.append(actual_url)
-                    print(f"Target Acquired: {actual_url}")
+                    print(f"[CRAWLER] ✅ Valid Target Acquired: {actual_url}")
                     
                 if len(urls_to_visit) >= max_results:
                     break
@@ -39,6 +42,7 @@ async def run_lead_scan(keyword: str, max_results: int = 3) -> list[dict]:
             # Visit each URL
             for url in urls_to_visit:
                 try:
+                    print(f"[CRAWLER] 🌐 Scanning Website: {url}")
                     await page.goto(url, timeout=10000)
                     title = await page.title()
                     content = await page.content()
@@ -46,6 +50,8 @@ async def run_lead_scan(keyword: str, max_results: int = 3) -> list[dict]:
                     # Regex to find email
                     email_match = re.search(r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+", content)
                     contact_email = email_match.group(0) if email_match else ""
+                    if contact_email:
+                        print(f"[CRAWLER] 📧 SUCCESS! Email found: {contact_email}")
                     
                     leads.append({
                         "company_name": title.strip() if title else "Unknown",
@@ -53,6 +59,7 @@ async def run_lead_scan(keyword: str, max_results: int = 3) -> list[dict]:
                         "website_url": url
                     })
                 except Exception:
+                    print(f"[CRAWLER] ❌ Skipped (Error/Timeout): {url}")
                     continue
         except Exception:
             pass
