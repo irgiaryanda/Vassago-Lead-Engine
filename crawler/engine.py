@@ -29,10 +29,6 @@ async def run_lead_scan(keyword: str, max_results: int = 3) -> list[dict]:
                 if not href or not href.startswith("http"):
                     continue
                     
-                # Filter out internal Bing/Microsoft links
-                if "bing.com" in href or "microsoft.com" in href:
-                    continue
-                    
                 actual_url = href
                 
                 if actual_url not in urls_to_visit:
@@ -56,7 +52,7 @@ async def run_lead_scan(keyword: str, max_results: int = 3) -> list[dict]:
                     leads.append({
                         "company_name": title.strip() if title else "Unknown",
                         "contact_email": contact_email,
-                        "website_url": url
+                        "website_url": page.url
                     })
                 except Exception:
                     print(f"[CRAWLER] ❌ Skipped (Error/Timeout): {url}")
