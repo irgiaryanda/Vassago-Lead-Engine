@@ -12,20 +12,29 @@ async def run_lead_scan(keyword: str, max_results: int = 3) -> list[dict]:
             await page.goto(f"https://html.duckduckgo.com/html/?q={keyword}", timeout=10000)
             
             # Extract search result URLs
-            url_elements = await page.locator("a.result__url").all()
+            await page.wait_for_timeout(2000)
+            url_elements = await page.locator("a.result__url, a.result__snippet, a.result__a, a").all()
             
             urls_to_visit = []
             for element in url_elements:
+                href = await element.get_attribute("href")
+                if not href:
+                    continue
+                    
+                actual_url = ""
+                if "uddg=" in href:
+                    actual_url = urllib.parse.unquote(href.split("uddg=")[1].split("&")[0])
+                elif href.startswith("http"):
+                    actual_url = href
+                else:
+                    continue
+                    
+                if actual_url and actual_url.startswith("http") and actual_url not in urls_to_visit:
+                    urls_to_visit.append(actual_url)
+                    print(f"Target Acquired: {actual_url}")
+                    
                 if len(urls_to_visit) >= max_results:
                     break
-                href = await element.get_attribute("href")
-                if href:
-                    if href.startswith("//duckduckgo.com/l/?uddg="):
-                        qs = urllib.parse.parse_qs(urllib.parse.urlparse("http:" + href).query)
-                        if "uddg" in qs:
-                            href = urllib.parse.unquote(qs["uddg"][0])
-                    if href.startswith(("http://", "https://")):
-                        urls_to_visit.append(href)
                     
             # Visit each URL
             for url in urls_to_visit:
