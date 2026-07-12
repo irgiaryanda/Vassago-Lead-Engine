@@ -21,7 +21,26 @@ async def get_leads():
         rows = await cursor.fetchall()
         return [dict(row) for row in rows]
 
+from crawler.engine import run_lead_scan
+
 @router.post("/api/scan")
 async def scan_leads(request: ScanRequest):
-    # Process scan
-    return {"status": "processing", "target_keyword": request.keyword}
+    leads = await run_lead_scan(request.keyword)
+    newly_saved = 0
+    
+    async with aiosqlite.connect("leads.sqlite3") as db:
+        for lead in leads:
+            cursor = await db.execute(
+                "INSERT OR IGNORE INTO company_leads (company_name, contact_email, website_url) VALUES (?, ?, ?)",
+                (lead["company_name"], lead["contact_email"], lead["website_url"])
+            )
+            if cursor.rowcount > 0:
+                newly_saved += 1
+        await db.commit()
+
+    return {
+        "status": "success",
+        "target_keyword": request.keyword,
+        "scanned_count": len(leads),
+        "newly_saved": newly_saved
+    }
