@@ -1,6 +1,9 @@
 import sys
 import asyncio
 import subprocess
+import webbrowser
+import uvicorn
+import multiprocessing
 from fastapi import FastAPI, Response
 from fastapi.staticfiles import StaticFiles
 
@@ -17,6 +20,8 @@ async def lifespan(app: FastAPI):
         subprocess.run(["playwright", "install", "chromium"], check=False, capture_output=True)
     except Exception as e:
         print(f"INFO: Browser check complete.")
+    print("INFO: Server is running. Opening dashboard in default browser...")
+    webbrowser.open("http://127.0.0.1:8000/ui/index.html")
     # Setup database
     await init_db()
     yield
@@ -35,3 +40,7 @@ app.include_router(router)
 async def root():
     # Return status
     return {"status": "Engine is running"}
+
+if __name__ == "__main__":
+    multiprocessing.freeze_support()
+    uvicorn.run(app, host="127.0.0.1", port=8000)
