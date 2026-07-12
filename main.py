@@ -1,3 +1,4 @@
+import os
 import sys
 import asyncio
 import subprocess
@@ -32,7 +33,14 @@ app = FastAPI(lifespan=lifespan)
 async def favicon():
     return Response(content=b"", media_type="image/x-icon")
 
-app.mount("/ui", StaticFiles(directory="ui"), name="ui")
+if getattr(sys, 'frozen', False):
+    base_dir = sys._MEIPASS
+else:
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    
+ui_dir = os.path.join(base_dir, "ui")
+
+app.mount("/ui", StaticFiles(directory=ui_dir), name="ui")
 
 app.include_router(router)
 
