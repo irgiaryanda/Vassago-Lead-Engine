@@ -11,38 +11,33 @@ async def run_lead_scan(keyword: str, max_results: int = 3) -> list[dict]:
         try:
             print(f"\n[CRAWLER] Initiating search for: {keyword}")
             encoded_keyword = urllib.parse.quote_plus(keyword)
-            search_url = f"https://html.duckduckgo.com/html/?q={encoded_keyword}"
+            search_url = f"https://www.bing.com/search?q={encoded_keyword}"
             await page.goto(search_url, timeout=30000)
             await page.wait_for_timeout(2000)
             print(f"[CRAWLER] Page loaded. Title: {await page.title()}")
             
             # Extract search result URLs
-            url_elements = await page.locator("a.result__url, a.result__snippet, a.result__a, a").all()
+            url_elements = await page.locator("li.b_algo h2 a, li.b_algo .b_title a").all()
             print(f"[CRAWLER] Found {len(url_elements)} raw link elements on search page")
             
             urls_to_visit = []
             for element in url_elements:
-                href = await element.get_attribute("href")
-                if not href:
-                    continue
-                    
-                actual_url = ""
-                if "uddg=" in href:
-                    actual_url = urllib.parse.unquote(href.split("uddg=")[1].split("&")[0])
-                elif href.startswith("http"):
-                    actual_url = href
-                else:
-                    continue
-                    
-                if "duckduckgo.com" in actual_url:
-                    continue
-                    
-                if actual_url and actual_url.startswith("http") and actual_url not in urls_to_visit:
-                    urls_to_visit.append(actual_url)
-                    print(f"[CRAWLER] ✅ Valid Target Acquired: {actual_url}")
-                    
                 if len(urls_to_visit) >= max_results:
                     break
+                    
+                href = await element.get_attribute("href")
+                if not href or not href.startswith("http"):
+                    continue
+                    
+                # Filter out internal Bing/Microsoft links
+                if "bing.com" in href or "microsoft.com" in href:
+                    continue
+                    
+                actual_url = href
+                
+                if actual_url not in urls_to_visit:
+                    urls_to_visit.append(actual_url)
+                    print(f"[CRAWLER] ✅ Valid Target Acquired: {actual_url}")
                     
             # Visit each URL
             for url in urls_to_visit:
