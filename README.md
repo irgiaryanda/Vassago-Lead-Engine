@@ -1,6 +1,9 @@
 ```markdown
 # Vassago Lead Engine
 
+> **READY TO USE (NON-DEVELOPERS):** 
+> You don't need to install Python or use the terminal. Download the compiled Windows standalone application directly from our [Latest Release](https://github.com/irgiaryanda/Vassago-Lead-Engine/releases/latest). Extract the ZIP file and run `VassagoLeadEngine.exe`.
+
 A robust, asynchronous web scraping engine designed for automated B2B lead generation. Built on FastAPI and Playwright, this application features dynamic search engine querying, anti-bot mitigation, and a standalone front-end dashboard for real-time monitoring and data extraction.
 
 ## System Architecture
